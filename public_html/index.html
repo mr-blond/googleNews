@@ -1,0 +1,85 @@
+<!--
+You are free to copy and use this sample in accordance with the terms of the
+Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Google AJAX Search API Sample</title>
+    <script src="js/libs/jquery/jquery.js" type="text/javascript"></script>
+    <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+    <script type="text/javascript">
+    /*
+    *  How to load a feed via the Feeds API.
+    */
+    $(function() {
+    google.load('feeds', '1', {"callback":OnClick});
+    var city = 'Annecy';
+
+    var edition = "fr";
+    // Our callback function, for when a feed is loaded.
+    function feedLoaded(result) {
+       // console.log(result);
+      if (!result.error) {
+        // Grab the container we will put the results into
+        var $container =  $('#content').empty();
+        var htmlToDisplay = '';
+        // Loop through the feeds, putting the titles onto the page.
+        // Check out the result object for a list of properties returned in each entry.
+        // http://code.google.com/apis/ajaxfeeds/documentation/reference.html#JSON
+        result.feed.entries.forEach(function(object){
+            //console.log(object);
+            htmlToDisplay += '<p><a href="'+object.link+'" target="_blank">'+object.title+'</a></p>';
+        });
+        
+        $container.html(htmlToDisplay);
+        
+      }
+    }
+    
+    function OnClick() {
+        
+      if($('#city').val()!==''){
+          city = $('#city').val();
+      }
+      if($('#edition').val()!==''){
+          edition = $('#edition').val();
+      }
+      
+      var query = "https://news.google.com/news/feeds?cf=all&ned="+edition+"&geo="+city+"&output=json";
+      console.log(query);
+      var feed = new google.feeds.Feed(query);
+      feed.setNumEntries(45);
+
+      // Calling load sends the request off.  It requires a callback function.
+      feed.load(feedLoaded);
+    }
+    
+    //listener
+    $('#submit').on('click',OnClick);
+});
+    </script>
+  </head>
+  <body style="font-family: Arial;border: 0 none;">
+      <div>
+          <p>Le probléme de ce service est que l'on ne peut pas selectionner une date spécifique ce qui nous obligerait a stocker les articles sur nos base de données (possible à condition de mentionner les sources) Cependant, le choix des sources des articles est interessant ! possibilité d'avoir un regard différent selon la mentalité du pays</p>
+      </div>
+      <div id="formulaire">
+          <input type="text" placeholder='Annecy' name="city" id="city" />
+         
+          <select id="edition">
+              <option selected value="fr">France</option>
+              <option value="us">USA</option>
+              <option value="gb">GB</option>
+              <option value="de">Allemagne</option>
+          </select>
+          
+           <input type="submit" name="submit" id="submit" />
+      </div>
+      
+    <div id="content"></div>
+  </body>
+</html>
+​
